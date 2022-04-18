@@ -18,7 +18,7 @@ public class EstablishConnection {
 
 //    establishing connection to database
     public Connection Connect(String url, String user, String password) throws SQLException {
-        Connection est_conn = DriverManager.getConnection(url, user, password);
+        Connection est_conn = DriverManager.getConnection(url,user,password);
         System.out.println("Successful connection");
         return est_conn;
     }
