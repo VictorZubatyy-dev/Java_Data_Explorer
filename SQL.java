@@ -1,28 +1,41 @@
 package com.dataexplorer;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
-public class SQL {
+public class SQL{
 //    private variables used to manipulate database
     private String table_name;
     private String[][] column_row_values;
     private Connection est_conn;
+    private ArrayList<String> county_array = new ArrayList<String>();
+    private String[] counties;
+    private String county;
+    private ArrayList<String> attraction_name = new ArrayList<>();
+
+    public SQL() {
+
+    }
 
 //    intilisation of class constructor, data, connection and table name are passed into the constructor to set and get values
     public SQL(String[][] column_row_values, Connection est_conn, String table_name) {
         get_column_row_values();
-        get_Connection();
         get_Table_Name();
         set_column_row_value(column_row_values);
-        set_Connection(est_conn);
         set_Table_Name(table_name);
-
+        get_Connection_Object();
+        set_Connection_Object(est_conn);
     }
 
-    private void set_Connection(Connection est_conn) {
+    protected void set_Connection_Object(Connection est_conn) {
         this.est_conn = est_conn;
+    }
+
+    protected Connection get_Connection_Object() {
+        return est_conn;
     }
 
     protected void set_Table_Name(String table_name) {
@@ -41,15 +54,11 @@ public class SQL {
         return column_row_values;
     }
 
-    protected Connection get_Connection() {
-        return est_conn;
-    }
-
 //CRUD
     public void CreateTable() throws SQLException {
 
         String createTable = "create table " + table_name + " (";
-        System.out.println(createTable);
+
 
 //        CREATE TABLE Persons (
 //    PersonID int,
@@ -65,30 +74,37 @@ public class SQL {
                 }
 
                 else{
+                    for (int c = 0; c < column_row_values[0][v].length(); c++){
+                        boolean is_white_space = Character.isWhitespace(column_row_values[0][v].charAt(c));
+                        if (is_white_space == true){
+                            column_row_values[0][v] = column_row_values[0][v].replace(column_row_values[0][v].charAt(c), '_');
+                        }
+                    }
                     createTable += column_row_values[0][v] + " varchar(255),";
                 }
 
-//                System.out.println(createTable);
+                System.out.println(createTable);
 
             }
 
             createTable += ")";
 
-//        createTable = createTable + "(" + column_row_values[0][0] + " int(4), " +
-//                column_row_values[0][1] + " varchar(10), " + column_row_values[0][2] + " varchar(3)," +
-//                column_row_values[0][3] + " varchar(5), " + column_row_values[0][4] + " int(10))";
-//        System.out.println(createTable);
-
         try (Statement stmt = est_conn.createStatement()) {
             stmt.executeUpdate(createTable);
+            System.out.println("You have successfully created table " + table_name);
+            String[][] updated_column_value_rows = UpdateTable(column_row_values);
+            set_column_row_value(updated_column_value_rows);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void UpdateTable() throws SQLException {
+    public String[][] UpdateTable(String[][] column_row_values) throws SQLException {
         Statement stmt = est_conn.createStatement();
-        System.out.println(column_row_values.length);
+        for (int v = 0; v < column_row_values[0].length; v++){
+            System.out.println(this.column_row_values[0][v]);
+        }
 
         String insert_into = "insert into " + table_name + "(";
         String values = ") values (";
@@ -97,10 +113,18 @@ public class SQL {
             for (int v = 0; v < column_row_values[i + 1].length; v++){
                 if (v == column_row_values[i + 1].length - 1){
                     insert_into += column_row_values[0][v];
-                    values += "'" + column_row_values[i + 1][v] + "'";
+                    if (column_row_values[i + 1][v].contains("'")) {
+                        column_row_values[i + 1][v] = column_row_values[i + 1][v].replace("'", " ");
+                        values += "'" + column_row_values[i + 1][v] + "'";
+                    }
+
+                    else {
+                        values += "'" + column_row_values[i + 1][v] + "'";
+                    }
                 }
 
                 else{
+//                  have to replace the commas within the values so that they are not recognised as separate values when inserting them into their relevant columns
                     insert_into += column_row_values[0][v] + ",";
                     if (column_row_values[i + 1][v].contains("'")){
                         column_row_values[i + 1][v] = column_row_values[i + 1][v].replace("'", " ");
@@ -122,8 +146,11 @@ public class SQL {
             values = " ";
             insert_into = "insert into " + table_name + "(";
             values = ") values (";
-
         }
+
+
+        System.out.println("Values have been successfully inserted into " + table_name);
+        return column_row_values;
 //        INSERT INTO Customers (CustomerName, ContactName, Address, City, PostalCode, Country)
 //        VALUES (value1, value2, value3, ...);
 
@@ -134,7 +161,56 @@ public class SQL {
 //        implement
         String dropTable = "drop table " + table_name;
         stmt.executeUpdate(dropTable);
+        System.out.println("You have successfully dropped table " + table_name);
     }
 
+    public void Country_Query() throws SQLException {
+        Statement stmt = est_conn.createStatement();
+        String county = " ";
+//        String select_country = "select "
+        ResultSet rs = stmt.executeQuery("select distinct AddressRegion from Attractions where AddressRegion is not null");
+        while(rs.next()) {
+            int i = 0;
+            county = rs.getString("AddressRegion");
+            if (county.isBlank()) {
+                System.out.println("Null value not added");
+            } else {
+                county_array.add(county);
+            }
+        }
+//        System.out.println(county_array);
+//        System.out.println(county_array.size());
+    }
+
+    //    insert the array list counties into an array for the combobox
+    public String[] Combo_Values(){
+        int no_of_counties = county_array.size();
+        counties = new String[no_of_counties];
+
+        for (int i = 0; i < counties.length; i++){
+            counties[i] = county_array.get(i);
+        }
+        return counties;
+    }
+
+    public ArrayList<String> Attractions(String county) throws SQLException {
+        Statement stmt = est_conn.createStatement();
+        System.out.println("select Name from Attractions where AddressRegion=" + county);
+        ResultSet rs = stmt.executeQuery("select Name from Attractions where AddressRegion=" + "'" + county + "'");
+        while(rs.next()) {
+            int i = 0;
+            county = rs.getString("Name");
+            if (county.isBlank()) {
+                System.out.println("Null value not added");
+            } else {
+                attraction_name.add(county);
+            }
+        }
+        return attraction_name;
+    }
+
+    public ArrayList<String> getCounty_array(){
+        return county_array;
+    }
 
 }
