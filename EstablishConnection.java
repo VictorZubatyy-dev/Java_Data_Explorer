@@ -8,21 +8,27 @@ public class EstablishConnection {
     private String url;
     private String user;
     private String password;
+    private Connection est_conn;
 
 //    constructor
     public EstablishConnection(String url, String user, String password){
         set_Url(url);
         set_User(user);
         set_Password(password);
+        get_User();
+
     }
 
-//    establishing connection to database
-    public Connection Connect(String url, String user, String password) throws SQLException {
-        Connection est_conn = DriverManager.getConnection(url,user,password);
+    public EstablishConnection() {
+
+    }
+
+    //    establishing connection to database
+    public Connection EstablishConnection(String url, String user, String password) throws SQLException {
+        Connection est_conn = DriverManager.getConnection(url, user, password);
         System.out.println("Successful connection");
         return est_conn;
     }
-
 //    public Connection NewConnect(String url, String user, String password, String con) throws SQLException {
 //
 //        return new_conn;

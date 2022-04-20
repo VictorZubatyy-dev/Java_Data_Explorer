@@ -1,8 +1,6 @@
 package com.dataexplorer;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 
 public class FileProcessor {
     private String file;
@@ -28,18 +26,13 @@ public class FileProcessor {
                 String line1 = read.readLine();
 
                 System.out.println(line1);
-                String [] line1_array = line1.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+                String [] line1_array = line1.strip().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
                 records_array.add(line1_array);
 
                 String [] line_array;
-                final int length = line1_array.length;
 
-
-//                records_array.add(line1_array);
-
-//                split, then check, if the length is greater than 9, then get first two elements, remove second one and put into first
                 while ((line = read.readLine()) != null) {
-                    line_array = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+                    line_array = line.strip().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
                     records_array.add(line_array);
 //                    System.out.println(records_array);
                 }
@@ -60,6 +53,7 @@ public class FileProcessor {
         String [][] column_row_values = new String[no_of_rows][no_of_columns];
         String[] values = {};
 
+
         for (int x = 0; x < columns.length; x++){
             column_row_values[0][x] = columns[x];
         }
@@ -75,10 +69,10 @@ public class FileProcessor {
                     column_row_values[k + 1][j] = values[j];
                 }
         }
-
-        for (int k = 0; k < records_array.size(); k++){
-            System.out.println(column_row_values[k][4]);
-        }
+//  test
+//        for (int k = 0; k < records_array.size(); k++){
+//            System.out.println(column_row_values[k][4]);
+//        }
         return column_row_values;
     }
 
