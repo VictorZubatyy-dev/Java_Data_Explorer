@@ -10,21 +10,17 @@ public class EstablishConnection {
     private String password;
     private Connection est_conn;
 
+
 //    constructor
     public EstablishConnection(String url, String user, String password){
         set_Url(url);
         set_User(user);
         set_Password(password);
         get_User();
-
-    }
-
-    public EstablishConnection() {
-
     }
 
     //    establishing connection to database
-    public Connection EstablishConnection(String url, String user, String password) throws SQLException {
+    public Connection Connection(String url, String user, String password) throws SQLException {
         Connection est_conn = DriverManager.getConnection(url, user, password);
         System.out.println("Successful connection");
         return est_conn;

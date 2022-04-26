@@ -15,62 +15,93 @@ public class GUI extends JFrame implements ActionListener{
     private JFrame frame;
     private JPanel panel;
     private JComboBox combobox;
-    private JLabel county_label;
-    private JButton display_button;
+    private JLabel county_label, reset_label;
+    private JButton display_button, reset_button;
     private JTextArea attraction_names;
     private JScrollPane scroll_pane;
     private SQL sql;
 
-    final static boolean shouldFill = true;
-    final static boolean shouldWeightX = true;
-    final static boolean RIGHT_TO_LEFT = false;
-
-//    GUI constructor
-    public GUI(String title, String[] counties, SQL sql) throws SQLException {
+    public GUI(){
+//        null constructor
+    }
+    //    GUI constructor
+    public GUI(String[] counties, SQL sql) throws SQLException {
         set_SQL(sql);
+        set_Counties(counties);
         get_SQL();
-//        create frame
+    }
+
+
+    private void set_Counties(String[] counties) {
+        this.counties = counties;
+    }
+
+    public void CreateGui(String title){
         frame = new JFrame();
-
-//        create label for counties
-        county_label = new JLabel();
-//        create combobox with counties within them using an array
-        combobox = new JComboBox(counties);
-        combobox.addActionListener(this);
-
-        display_button = new JButton();
-        display_button.setSize(10,10);
-        display_button.addActionListener(this);
-
-
-        attraction_names = new JTextArea();
-        attraction_names.setLineWrap(true);
-
-        scroll_pane = new JScrollPane(attraction_names);
-//        scroll_pane.setPreferredSize(new Dimension( 100));
-
-
-
-
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setTitle(title);
         panel = new JPanel();
-//        panel.setBorder(BorderFactory.createEmptyBorder(110,30,110,30));
+        frame.add(panel);
+        Components(panel);
+        frame.setSize(500,500);
+        frame.setVisible(true);
+    }
+
+    public void Components(JPanel panel){
+
         panel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(3,3,3,3);
+//      create label for counties
 
-        panel.add(county_label);
-        county_label.setText("County:");
-        panel.add(combobox);
-        panel.add(display_button);
-        panel.add(scroll_pane);
+        county_label = new JLabel("County");
+        c.gridx = 0;
+        c.gridy = 0;
+        panel.add(county_label, c);
 
-        display_button.setText("Display");
-        frame.add(panel);
-        frame.setSize(500,500);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setTitle(title);
+        combobox = new JComboBox(counties);
+        combobox.addActionListener(this);
+        c.gridx = 1;
+        c.gridy = 0;
+        panel.add(combobox, c);
 
-        frame.setVisible(true);
+        display_button = new JButton("Display");
+        c.gridx = 2;
+        c.gridy = 0;
+        display_button.addActionListener(this);
+        panel.add(display_button, c);
+
+        attraction_names = new JTextArea();
+        c.ipady = 50;
+        c.ipadx = 5;
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = 3;
+        attraction_names.setLineWrap(true);
+        attraction_names.setEditable(false);
+        panel.add(attraction_names, c);
+
+        scroll_pane = new JScrollPane(attraction_names);
+//        scroll_pane.add(scrollBar);
+        panel.add(scroll_pane, c);
+
+        reset_button = new JButton("Reset");
+        c.gridx = 0;
+        c.gridy = 2;
+        c.gridwidth = 3;
+        c.ipady = 0;
+        reset_button.addActionListener(this);
+        panel.add(reset_button, c);
+
+        reset_label = new JLabel("To display new attractions, please press the reset button");
+        reset_label.setForeground(Color.red);
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 3;
+        c.ipady = 0;
+        reset_label.setVisible(false);
+        panel.add(reset_label, c);
     }
 
     protected SQL get_SQL() {
@@ -83,6 +114,7 @@ public class GUI extends JFrame implements ActionListener{
 
     //    @Override
     public void actionPerformed(ActionEvent e) {
+
         if (e.getSource()==combobox){
             county = (String)combobox.getSelectedItem();
         }
@@ -91,28 +123,44 @@ public class GUI extends JFrame implements ActionListener{
             if(county == null){
                 System.out.println("Choose a county");
             }
+
             else{
-                try {
+                if (attraction_names.getText().isBlank()){
+                    try {
 
-                    attraction_name = sql.Attractions(county);
+                        attraction_name = sql.Attractions(county);
 
-                    System.out.println(attraction_name.size());
-                    for (int i = 0; i < attraction_name.size(); i++){
-//                        for (int x = 0; x < attra)
-                        attraction_names.append(attraction_name.get(i) + "," + " ");
+                        System.out.println(attraction_name.size());
+                        for (int i = 0; i < attraction_name.size(); i++){
 
-
-                        System.out.println(attraction_name.get(i));
-                    }
+                            attraction_names.append(attraction_name.get(i));
+                            attraction_names.append("\n");
+                            System.out.println(attraction_name.get(i));
+                        }
 
 //                    for (String name : attraction_name){
 //                        attraction_names.insert();
 //                        attraction_names.append(name + " ");
 //                    }
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+
+
+                }
+                else{
+                    reset_label.setVisible(true);
+                    display_button.setToolTipText("Click the reset button to display new results.");
                 }
             }
         }
-            }
+
+        else if (e.getSource()==reset_button){
+            attraction_names.setText("");
+            attraction_name.clear();
+            reset_label.setVisible(false);
+        }
+    }
+
+
 }
