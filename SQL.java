@@ -11,31 +11,33 @@ public class SQL{
     private String table_name;
     private String[][] column_row_values;
     private Connection est_conn;
-    private ArrayList<String> county_array = new ArrayList<String>();
-    private String[] counties;
-    private String county;
-    private ArrayList<String> attraction_name = new ArrayList<>();
+    private final ArrayList<String> county_array = new ArrayList<String>();
+    private final ArrayList<String> attraction_name = new ArrayList<>();
 
-    public SQL() {
+    public SQL(Connection est_conn){
+        set_Connection_Object(est_conn);
 
     }
-
-//    intilisation of class constructor, data, connection and table name are passed into the constructor to set and get values
+    //    intilisation of class constructor, data, connection and table name are passed into the constructor to set and get values
     public SQL(String[][] column_row_values, Connection est_conn, String table_name) {
         get_column_row_values();
         get_Table_Name();
         set_column_row_value(column_row_values);
         set_Table_Name(table_name);
-        get_Connection_Object();
         set_Connection_Object(est_conn);
-    }
-
-    protected void set_Connection_Object(Connection est_conn) {
-        this.est_conn = est_conn;
+        get_Connection_Object();
     }
 
     protected Connection get_Connection_Object() {
         return est_conn;
+    }
+
+    public SQL() {
+
+    }
+
+    protected void set_Connection_Object(Connection est_conn) {
+        this.est_conn = est_conn;
     }
 
     protected void set_Table_Name(String table_name) {
@@ -54,40 +56,31 @@ public class SQL{
         return column_row_values;
     }
 
-//CRUD
+    //CRUD
     public void CreateTable() throws SQLException {
 
         String createTable = "create table " + table_name + " (";
 
-
-//        CREATE TABLE Persons (
-//    PersonID int,
-//    LastName varchar(255),
-//    FirstName varchar(255),
-//    Address varchar(255),
-//    City varchar(255)
-//);
-
-            for (int v = 0; v < column_row_values[0].length; v++){
-                if (v == column_row_values[0].length - 1) {
-                    createTable += column_row_values[0][v] + " varchar(255)";
-                }
-
-                else{
-                    for (int c = 0; c < column_row_values[0][v].length(); c++){
-                        boolean is_white_space = Character.isWhitespace(column_row_values[0][v].charAt(c));
-                        if (is_white_space == true){
-                            column_row_values[0][v] = column_row_values[0][v].replace(column_row_values[0][v].charAt(c), '_');
-                        }
-                    }
-                    createTable += column_row_values[0][v] + " varchar(255),";
-                }
-
-                System.out.println(createTable);
-
+        for (int v = 0; v < column_row_values[0].length; v++){
+            if (v == column_row_values[0].length - 1) {
+                createTable += column_row_values[0][v] + " varchar(255)";
             }
 
-            createTable += ")";
+            else{
+                for (int c = 0; c < column_row_values[0][v].length(); c++){
+                    boolean is_white_space = Character.isWhitespace(column_row_values[0][v].charAt(c));
+                    if (is_white_space == true){
+                        column_row_values[0][v] = column_row_values[0][v].replace(column_row_values[0][v].charAt(c), '_');
+                    }
+                }
+                createTable += column_row_values[0][v] + " varchar(255),";
+            }
+
+            System.out.println(createTable);
+
+        }
+
+        createTable += ")";
 
         try (Statement stmt = est_conn.createStatement()) {
             stmt.executeUpdate(createTable);
@@ -184,6 +177,7 @@ public class SQL{
 
     //    insert the array list counties into an array for the combobox
     public String[] Combo_Values(){
+        String[] counties;
         int no_of_counties = county_array.size();
         counties = new String[no_of_counties];
 
@@ -208,6 +202,18 @@ public class SQL{
         }
         return attraction_name;
     }
+
+    public boolean Show_Tables(String table_name) throws SQLException {
+        Statement stmt = est_conn.createStatement();
+        ResultSet rs = stmt.executeQuery("show tables like" + "'" + table_name + "'");
+
+        if (rs.next() == false){
+            return false;
+        }
+        return true;
+    }
+
+
 
     public ArrayList<String> getCounty_array(){
         return county_array;

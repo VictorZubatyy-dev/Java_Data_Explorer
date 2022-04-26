@@ -2,15 +2,15 @@ package com.dataexplorer;
 import java.io.*;
 import java.util.ArrayList;
 
-public class FileProcessor {
-    private String file;
+public class FileProcessor{
+    private File file;
     private final ArrayList<String[]> records_array = new ArrayList<String[]>();
 
-    public FileProcessor(File File) {
+    public FileProcessor(File file) {
         set_File_Name(file);
     }
 
-    private void set_File_Name(String file) {
+    protected void set_File_Name(File file) {
         this.file = file;
     }
 
@@ -77,7 +77,7 @@ public class FileProcessor {
     }
 
 //    getters and setters
-    protected String getFile() {
+    protected File getFile() {
         return file;
     }
 }
