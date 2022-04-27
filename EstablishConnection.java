@@ -1,3 +1,8 @@
+// Purpose: Java Database Application
+// Academic Year: 2021-2022
+// Author: Victor Zubatyy - D21125389 - DT211/C
+// Date: April 2022
+
 package com.dataexplorer;
 
 import java.sql.Connection;
@@ -5,32 +10,25 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class EstablishConnection {
+    //    instance variables
     private String url;
     private String user;
     private String password;
-    private Connection est_conn;
 
-
-//    constructor
     public EstablishConnection(String url, String user, String password){
         set_Url(url);
         set_User(user);
         set_Password(password);
-        get_User();
     }
 
-    //    establishing connection to database
+    //    establishing connection to database, returns the connection object
     public Connection Connection(String url, String user, String password) throws SQLException {
         Connection est_conn = DriverManager.getConnection(url, user, password);
         System.out.println("Successful connection");
         return est_conn;
     }
-//    public Connection NewConnect(String url, String user, String password, String con) throws SQLException {
-//
-//        return new_conn;
-//    }
 
-//     getters and setters
+//    getters and setters
     protected void set_Url(String url) {
         this.url = url;
     }
@@ -54,8 +52,4 @@ public class EstablishConnection {
     protected String get_Password(){
         return password;
     }
-
-
-
-
 }
