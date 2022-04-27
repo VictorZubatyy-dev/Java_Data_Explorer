@@ -1,4 +1,5 @@
 **Classes**
+
 Main.java
 - Used to instantiate the JDBC connection object which is then passed in as an argument to the 
   GUI class.
