@@ -1,13 +1,3 @@
-# Java
-Used for java assignment
-- Readme file: Include a readme file to explain your project. This should list:
-1. List of classes, with a description.
-2. Description of the core functionality you included;
-3. Description/list of the optional functionality you included.
-4. Explain what you would add if you had more time.
-5. URL to your video.
-
-
 **Classes**
 Main.java
 - Used to instantiate the JDBC connection object which is then passed in as an argument to the 
