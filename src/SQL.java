@@ -3,8 +3,6 @@
 // Author: Victor Zubatyy - D21125389 - DT211/C
 // Date: April 2022
 
-package com.dataexplorer;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
