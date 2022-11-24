@@ -1,5 +1,8 @@
-**Classes**
+To setup:
+Clone this repo into any IDE and to ensure that this project runs successfully, go to your IDE project structure settings, go to the modules and
+add the JDBC jar connector file to it (located in the lib directory within this project).
 
+**Classes**
 Main.java
 - Used to instantiate the JDBC connection object which is then passed in as an argument to the 
   GUI class.
